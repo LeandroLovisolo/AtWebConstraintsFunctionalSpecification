@@ -1,9 +1,17 @@
-\documentclass[a4paper, 10pt, twoside]{article}
+\documentclass[a4paper, 10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{xspace} % Needed for \xspace
 \usepackage{hyperref} % Needed for \href
+\usepackage{graphicx} % Needed for \includegraphics
 
+% Utility macros
 \newcommand{\atweb}{\textbf{@Web}\xspace}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\img}[2]{
+  \begin{center}
+    \includegraphics[width=#2]{img/#1}
+  \end{center}
+}
 
 \begin{document}
 
@@ -29,30 +37,154 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Ontology}
+\section{Core ontology changes}
 
-Pending.
+The following list provides a high level view of the changes proposed to the
+core ontology.
+
+\begin{itemize}
+  \item A new OWL class \code{Constraint} is added to the core ontology,
+  which represents constraints expressed as SPARQL queries.
+
+  \item Instances of the \code{Constraint} class are associated to their
+  respective relation classes via a new object property
+  \code{hasForConstraint}.
+
+  \item A new data property \code{hasForSPARQLQuery} is added, which connects
+  instances of the \code{Constraint} class with a string literal holding the
+  actual SPARQL query.
+
+  \item Constraints are described in natural language with a textual guideline
+  associated to \code{Constraint} instances via a SKOS scope note.
+\end{itemize}
 
 \subsection{Biorefinery domain ontology}
 
-Pending.
+This particular domain requires the notion of \textit{topics}, which have
+associated constraints that require additional information. In the following
+sections, the concept of topics is explained, and then some changes to the
+domain ontology are proposed to support expressing the required constraints as
+SPARQL queries.
+
+\subsubsection{Topics}
+
+Topics are a way to group relations according to the kind of experiment they
+model. This grouping is currently done in the \atweb platform via document
+topics (e.g., Bioref-PM, Bioref-PM-UFM, Bioref-PM-PC-EX-PS, etc.)
+
+Each experiment must belong to exactly one topic.
+
+Each topic has clearly defined rules to decide whether an experiment (i.e. a
+set of relation instances) belongs to it or not.
+
+Given an experiment and the topic it belongs to, it is required to check said
+rules automatically. To this end, rules are encoded as constraints written as
+SPARQL queries.
+
+\subsubsection{Changes to the Biorefinery domain ontology}
+
+A new symblic concept \code{ProcessType} is created, with one subclass for each
+supported topic. Each such subclass is listed below, with its proposed
+alternate label between parentheses:
+
+\begin{itemize}
+  \item \code{Milling} (PM)
+  \item \code{Milling\_PhysicoChemical\_Extrusion} (PM-PC-EX-PS)
+  \item \code{Milling\_PhysicoChemical} (PM-PC-PS)
+  \item \code{Milling\_PhysicoChemical\_UltraFineMilling} (PM-PC-UFM)
+  \item \code{Milling\_PhysicoChemical\_UltraFineMilling\_PressSeparation}
+  (PM-PC-UFM-PS)
+  \item \code{Milling\_UltraFineMilling} (PM-UFM)
+\end{itemize}
+
+A new argument is added to the n-ary relations in this domain with the purpose
+of linking a relation instance to the topic (i.e. \code{ProcessType} subclass)
+of the experiment it belongs to.
+
+The \code{Constraint} instances that verify the topic inclusion rules are
+associated to the \code{Relation} class in order to make them available to all
+subclasses (i.e. all relations).
+
+In a future version of \atweb there should be a mechanism for ontology-level
+constraints that would allow a more correct way of expressing topic
+constraints.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Ontology uploading via CSV files}
 
-Pending.
+A new screen is added to the \atweb management UI with the purpose of uploading
+constraints as CSV files. Such files would have the following columns:
+
+\begin{itemize}
+  \item \code{prefLabel=EN} (e.g. \textit{Milling})
+  \item \code{altLabel=EN} (e.g. \textit{PM})
+  \item \code{scopeNote=EN} (textual guideline)
+  \item \code{Relation\_Concept}
+  \item \code{SPARQL\_query}
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{User interface}
 
-Pending.
+The constraint visualization and verification user interface is described in
+the following sections.
+
+\subsection{Constraint visualization}
+
+Constraints are displayed next to the scope notes when exploring relations, as
+shown below.
+
+\img{constraint-visualization.png}{12cm}
+
+\subsection{Constraint verification}
+
+The constraint verification process is done on a per-table basis, and is
+launched by rigth-clicking on the target table and selecting \textit{validate
+constraints}, as shown below.
+
+\img{validate-constraints-menu-item.png}{5cm}
+
+The user is then taken to a screen where they can select the constraints
+they're interested in verifying. This list is built by compiling the
+constraints linked to all relations that show up in the table.
+
+\vspace{0.2cm}
+[Pending screen sketch]
+\vspace{0.2cm}
+
+After clicking the \textit{Validate} button, a loading indicator is shown. When
+the queries finish running the user is taken to a results screen, where a
+summary of the errors is provided.
+
+\vspace{0.2cm}
+[Pending screen sketch]
+\vspace{0.2cm}
+
+The table icon is updated to reflect the presence or absence of errors.
+
+\vspace{0.2cm}
+[Pending screen sketch]
+\vspace{0.2cm}
+
+In the case of errors, when the user enters the table edition screen they will
+see the rows in a table containing errors highlighted in red. The user can get
+additional information (such as the name of the constraint violated) by
+hovering the mouse pointer over the affected row.
+
+\img{validate-constraints-results.png}{12cm}
+
+It should be noted that we're also interested in running the constraints not
+only at the table label, but also at the document and topic level. Although
+this specification doesn't cover how this will be done, it should be taken into
+consideration in the event of architectural changes to support constraint
+checking.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Time estimates}
-
-Pending.
+% \section{Time estimates}
+%
+% Pending.
 
 \end{document}
