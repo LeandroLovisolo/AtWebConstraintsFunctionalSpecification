@@ -206,7 +206,9 @@ gray.
   Row with validation errors no longer in red after modifying its contents.
 }{12cm}
 
-The table icon also changes color to reflect this new state.
+The table icon also changes color to reflect this new state, i.e. the table
+used to have errors and it has since been modified, but its validation
+constraints have yet to be rerun.
 
 \img{table-pin-after-modifications.png}{
   Table icon after modifying its annotations in the presence of validation
@@ -220,6 +222,15 @@ should be reset to the default icon.
 
 \section{Other implementation details}
 
-Pending. % new table in relational database to keep record of tables that had validation errors, were modified, but its constraints haven't been rerun yet.
+\code{Error} instances should be stored in the annotations ontology.
+
+An \code{Error} instance should be eliminated after a modification to its
+related row is performed.
+
+A new table should be created in the relational database to keep a list of all
+annotated tables that should be shown in the UI with an icon indicating the
+presence of errors. That is, annotated tables that have or had validation
+errors and have been modified since those errors were found, but their
+validation constraints haven't been rerun.
 
 \end{document}
