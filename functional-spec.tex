@@ -3,14 +3,18 @@
 \usepackage{xspace} % Needed for \xspace
 \usepackage{hyperref} % Needed for \href
 \usepackage{graphicx} % Needed for \includegraphics
+\usepackage{float} % Needed for figures with the H placement specifier
 
 % Utility macros
 \newcommand{\atweb}{\textbf{@Web}\xspace}
 \newcommand{\code}[1]{\texttt{#1}}
-\newcommand{\img}[2]{
-  \begin{center}
-    \includegraphics[width=#2]{img/#1}
-  \end{center}
+\newcommand{\img}[3]{
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=#3]{img/#1}
+      \caption{#2}
+    \end{center}
+  \end{figure}
 }
 
 \begin{document}
@@ -56,6 +60,17 @@ core ontology.
 
   \item Constraints are described in natural language with a textual guideline
   associated to \code{Constraint} instances via a SKOS scope note.
+
+  \item A new \code{Error} concept is added, with the purpose of storing
+    validation errors collected during the execution of the SPARQL constraints.
+
+  \item Instances of the \code{Error} class are linked to the \code{Constraint}
+    instance that produced the validation error via a new object property
+    \code{hasForConstraint}.
+
+  \item Instances of the \code{Error} class are linked to the \code{Row}
+    instance associated to the unit operation relation instance that caused the
+    error via a new object property \code{hasForRow}.
 \end{itemize}
 
 \subsection{Biorefinery domain ontology}
@@ -142,7 +157,7 @@ the following sections.
 Constraints are displayed next to the scope notes when exploring relations, as
 shown below.
 
-\img{constraint-visualization.png}{12cm}
+\img{constraint-visualization.png}{Constraint visualization.}{12cm}
 
 Note that this visualization is read-only.
 
@@ -152,59 +167,59 @@ The constraint verification process is done on a per-table basis, and is
 launched by right-clicking the target table and selecting \textit{validate
 constraints}, as shown below.
 
-\img{validate-constraints-menu-item.png}{5cm}
+\img{validate-constraints-menu-item.png}{
+  \textit{validate constraints} menu item.
+}{5cm}
 
 The user is then taken to a screen where they can select the constraints to
 verify. This list is compiled by finding all constraints linked to the
 categories associated with all relation instances in the table annotations.
 
-\img{constraint-selection.png}{12cm}
+\img{constraint-selection.png}{Constraint selection.}{12cm}
 
 After clicking the \textit{Validate selected constraints} button, a loading
 indicator is shown. When the queries finish running the user is taken to a
 results screen sketched below, where a summary of the errors is provided.
 
-\img{validation-results-summary.png}{8cm}
+\img{validation-results-summary.png}{Summary of validation results.}{8cm}
 
 The table icon is updated to reflect the presence or absence of errors.
 
-\img{table-pin-error.png}{5cm}
+\img{table-pin-error.png}{
+  Table icon changes to reflect the presence of errors.
+}{5cm}
 
 In the case of errors, when the user enters the table edition screen they will
 see the rows in a table containing errors highlighted in red.
 
-\img{edit-annotation.png}{12cm}
+\img{edit-annotation.png}{Annotated table with validation errors.}{12cm}
 
 The user can get additional information (such as the name of the constraint
 violated) by hovering the mouse pointer over the affected row.
 
-\img{validation-results-details.png}{12cm}
+\img{validation-results-details.png}{Validation error details.}{12cm}
 
 After performing modifications on an affected row, the row color goes back to
 gray.
 
-\img{validation-results-after-modifications.png}{12cm}
+\img{validation-results-after-modifications.png}{
+  Row with validation errors no longer in red after modifying its contents.
+}{12cm}
 
 The table icon also changes color to reflect this new state.
 
-\img{table-pin-after-modifications.png}{5cm}
+\img{table-pin-after-modifications.png}{
+  Table icon after modifying its annotations in the presence of validation
+  errors.
+}{5cm}
+
+If no errors are found after running the validation constraints, the table icon
+should be reset to the default icon.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section{Implementation details}
-%
-% In order to implement the UI sketched in the previous section, validation errors must be stored along with other existing application state.
-%
-% It should be noted that we're also interested in running the constraints not
-% only at the table label, but also at the document and topic level. Although
-% this specification doesn't cover how this will be done, it should be taken into
-% consideration in the event of architectural changes to support constraint
-% checking.
+\section{Other implementation details}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \section{Time estimates}
-%
-% Pending.
+Pending. % new table in relational database to keep record of tables that had validation errors, were modified, but its constraints haven't been rerun yet.
 
 \end{document}
