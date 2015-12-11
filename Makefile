@@ -2,7 +2,7 @@
 
 all: functional-spec.pdf
 
-functional-spec.pdf: functional-spec.tex
+functional-spec.pdf: functional-spec.tex img/*.png
 	pdflatex -interaction=nonstopmode -halt-on-error functional-spec.tex && \
 	pdflatex -interaction=nonstopmode -halt-on-error functional-spec.tex
 
